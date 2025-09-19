@@ -1,4 +1,4 @@
-// --- Start/Intro/Game Page Switching ---
+// ---- Start/Intro/Game Page Switching ---
 window.addEventListener("DOMContentLoaded", function() {
   const startPage = document.getElementById('startPage');
   const introPage = document.getElementById('introPage');
