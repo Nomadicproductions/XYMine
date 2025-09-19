@@ -1387,6 +1387,7 @@ function checkCollision(x, y) {
     if (level[ty] && level[ty][tx]) {
       const tile = level[ty][tx];
       if (tile === '#') return true;
+      if (tile === '-') return true;
       if (tile === '@' && isSpinningPlatformSolid()) return true;
     }
     for (let p of movingPlatforms) {
