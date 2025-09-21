@@ -1,0 +1,69 @@
+name: Reset Cache Branch Switch (Alternative)
+
+on:
+  push:
+    branches:
+      - joeyaugust1-patch-3
+  workflow_dispatch:
+    inputs:
+      manual_trigger:
+        description: 'Manually trigger cache reset'
+        required: false
+        default: 'true'
+
+permissions:
+  contents: read
+  pages: write
+  actions: write
+  metadata: read
+
+jobs:
+  reset-cache-alternative:
+    runs-on: ubuntu-latest
+    name: Alternative Cache Reset via Repository Dispatch
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup GitHub CLI
+        run: |
+          echo "Setting up GitHub CLI..."
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Current Pages Status
+        run: |
+          echo "Checking current GitHub Pages status..."
+          curl -s \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/pages | jq .
+
+      - name: Trigger deployment to branch 2
+        run: |
+          echo "Creating empty commit on joeyaugust1-patch-2 to trigger fresh deployment..."
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git fetch origin joeyaugust1-patch-2:joeyaugust1-patch-2
+          git checkout joeyaugust1-patch-2
+          git commit --allow-empty -m "Trigger deployment for cache reset - $(date)"
+          git push origin joeyaugust1-patch-2
+
+      - name: Wait for deployment
+        run: |
+          echo "Waiting 45 seconds for GitHub Pages to process the deployment..."
+          sleep 45
+
+      - name: Trigger deployment back to branch 3
+        run: |
+          echo "Creating empty commit on joeyaugust1-patch-3 to return to normal deployment..."
+          git fetch origin joeyaugust1-patch-3:joeyaugust1-patch-3
+          git checkout joeyaugust1-patch-3
+          git commit --allow-empty -m "Return to branch 3 after cache reset - $(date)"
+          git push origin joeyaugust1-patch-3
+
+      - name: Final status check
+        run: |
+          echo "Workflow completed! Cache reset process finished."
+          echo "Both branches have been refreshed to clear GitHub Pages cache."
+          echo "Your changes on joeyaugust1-patch-3 should now be live with fresh cache."
