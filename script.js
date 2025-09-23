@@ -1007,7 +1007,7 @@ function drawTriggerOverlay() {
 
 const player = {
   x: 0, y: 0, width: tileSize * 0.8, height: tileSize * 0.8,
-  color: '#00f', dx: 0, dy: 0, speed: 2.5, jumpPower: 7,
+  color: '#00f', dx: 0, dy: 0, speed: 2.5, jumpPower: 10,
   grounded: false, coinCount: 0, jumpsRemaining: 2
 };
 
